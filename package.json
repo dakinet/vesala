@@ -1,7 +1,7 @@
 {
   "name": "vesala-igra",
   "version": "1.0.0",
-  "description": "Igra vešala za dva igrača na srpskom jeziku",
+  "description": "Profesionalna igra vešala za dva igrača na srpskom jeziku",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "fs": "^0.0.1-security"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
