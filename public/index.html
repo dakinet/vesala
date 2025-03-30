@@ -5,89 +5,317 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vešala - Srpska verzija</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4c6ef5;
+            --secondary-color: #3b5bdb;
+            --success-color: #40c057;
+            --danger-color: #fa5252;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --gray-color: #adb5bd;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f5ff;
             margin: 0;
             padding: 20px;
             text-align: center;
+            color: var(--dark-color);
+            transition: background-color 0.5s;
         }
+        
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
+        
         h1 {
-            color: #333;
+            font-family: 'Permanent Marker', cursive;
+            color: var(--primary-color);
             margin-bottom: 30px;
+            font-size: 3em;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
+        
         .game-section {
             display: none;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
-        #welcome-section {
+        
+        .active {
             display: block;
+            opacity: 1;
         }
+        
         .btn {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
             margin: 10px 5px;
             cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+            min-width: 150px;
         }
+        
         .btn:hover {
-            background-color: #45a049;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
-        #canvas {
-            border: 1px solid #ddd;
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #37b24d;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #e03131;
+        }
+        
+        .hangman-container {
+            position: relative;
             margin: 20px auto;
-            display: block;
+            width: 300px;
+            height: 300px;
         }
+        
+        #canvas {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        
         .word-display {
-            font-size: 2em;
-            letter-spacing: 10px;
-            margin: 20px 0;
+            font-size: 2.5em;
+            letter-spacing: 12px;
+            margin: 30px 0;
             font-family: monospace;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-height: 50px;
         }
+        
         .guesses {
             margin: 20px 0;
         }
+        
         input {
-            padding: 10px;
+            padding: 12px 20px;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #dee2e6;
+            border-radius: 50px;
             margin-right: 10px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 250px;
+            text-align: center;
         }
+        
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(76, 110, 245, 0.2);
+        }
+        
         .message {
-            font-size: 1.2em;
-            color: #555;
+            font-size: 1.3em;
+            color: var(--dark-color);
             margin: 20px 0;
-            min-height: 25px;
+            min-height: 30px;
+            font-weight: bold;
+            transition: all 0.5s;
         }
+        
+        .error-message {
+            color: var(--danger-color);
+            animation: shake 0.5s;
+        }
+        
+        .success-message {
+            color: var(--success-color);
+        }
+        
         .game-id {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
             font-family: monospace;
-            font-size: 1.2em;
-            margin: 20px 0;
+            font-size: 1.6em;
+            margin: 20px auto;
+            max-width: 200px;
+            user-select: all;
+            cursor: pointer;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
         }
+        
+        .game-id:hover {
+            background-color: #dee2e6;
+        }
+        
         .guessed-letters {
             font-family: monospace;
-            font-size: 1.2em;
+            font-size: 1.3em;
             margin: 20px 0;
-            color: #555;
+            color: var(--gray-color);
+            letter-spacing: 5px;
+        }
+        
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .player-score {
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .player-score.active-player {
+            background-color: rgba(76, 110, 245, 0.2);
+            font-weight: bold;
+        }
+        
+        .player-name {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .score {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .round-info {
+            font-size: 1.2em;
+            margin: 15px 0;
+            color: var(--gray-color);
+        }
+        
+        /* Animacije */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes winner {
+            0% { background-color: #f0f5ff; }
+            50% { background-color: #e6fcef; }
+            100% { background-color: #f0f5ff; }
+        }
+        
+        @keyframes loser {
+            0% { background-color: #f0f5ff; }
+            50% { background-color: #fff0f3; }
+            100% { background-color: #f0f5ff; }
+        }
+        
+        .win-animation {
+            animation: winner 4s;
+        }
+        
+        .lose-animation {
+            animation: loser 4s;
+        }
+        
+        .pulse-animation {
+            animation: pulse 0.5s infinite;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s;
+        }
+        
+        .waiting-dots {
+            display: inline-block;
+        }
+        
+        .waiting-dots:after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        /* Konfeti animacija za pobednika */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0;
+            opacity: 0.7;
+            animation: fall linear;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -96,12 +324,15 @@
         <h1>Vešala - Srpska verzija</h1>
         
         <!-- Početni ekran -->
-        <div id="welcome-section" class="game-section">
+        <div id="welcome-section" class="game-section active">
             <p>Dobrodošli u igru Vešala! Izaberite opciju:</p>
+            <div>
+                <input type="text" id="player-name-input" placeholder="Unesite vaše ime" autocomplete="off">
+            </div>
             <button id="create-game-btn" class="btn">Kreiraj novu igru</button>
-            <div id="join-game-section" style="margin-top: 20px;">
+            <div style="margin-top: 30px;">
                 <p>Ili se pridružite postojećoj igri:</p>
-                <input type="text" id="game-id-input" placeholder="Unesite ID igre">
+                <input type="text" id="game-id-input" placeholder="Unesite ID igre" autocomplete="off">
                 <button id="join-game-btn" class="btn">Pridruži se</button>
             </div>
         </div>
@@ -109,41 +340,82 @@
         <!-- Ekran kreiranja igre -->
         <div id="waiting-section" class="game-section">
             <p>Igra je kreirana! Pošaljite ovaj ID drugom igraču:</p>
-            <div id="game-id-display" class="game-id"></div>
-            <p>Čekanje na drugog igrača...</p>
+            <div id="game-id-display" class="game-id" title="Kliknite da kopirate"></div>
+            <p>Čekanje na drugog igrača<span class="waiting-dots"></span></p>
         </div>
         
         <!-- Ekran za unos reči (prvi igrač) -->
         <div id="word-selection-section" class="game-section">
-            <p>Vi ste prvi igrač. Unesite reč koju će drugi igrač pogađati:</p>
-            <input type="text" id="word-input" placeholder="Unesite reč">
-            <button id="submit-word-btn" class="btn">Potvrdi</button>
+            <div class="scoreboard">
+                <div id="player1-score" class="player-score active-player">
+                    <div class="player-name">Igrač 1</div>
+                    <div class="score">0</div>
+                </div>
+                <div id="player2-score" class="player-score">
+                    <div class="player-name">Igrač 2</div>
+                    <div class="score">0</div>
+                </div>
+            </div>
+            <div class="round-info">Runda: <span id="current-round">1</span></div>
+            
+            <p>Vi ste na redu da zadate reč koju će protivnik pogađati:</p>
+            <input type="text" id="word-input" placeholder="Unesite reč" autocomplete="off">
+            <button id="submit-word-btn" class="btn btn-success">Potvrdi</button>
         </div>
         
         <!-- Ekran čekanja da prvi igrač unese reč -->
         <div id="waiting-for-word-section" class="game-section">
-            <p>Vi ste drugi igrač. Čekanje da prvi igrač unese reč...</p>
+            <div class="scoreboard">
+                <div id="player1-score-waiting" class="player-score active-player">
+                    <div class="player-name">Igrač 1</div>
+                    <div class="score">0</div>
+                </div>
+                <div id="player2-score-waiting" class="player-score">
+                    <div class="player-name">Igrač 2</div>
+                    <div class="score">0</div>
+                </div>
+            </div>
+            <div class="round-info">Runda: <span id="current-round-waiting">1</span></div>
+            
+            <p>Protivnik zadaje reč<span class="waiting-dots"></span></p>
         </div>
         
         <!-- Glavni ekran igre -->
         <div id="game-section" class="game-section">
-            <div id="player-info"></div>
-            <canvas id="canvas" width="300" height="300"></canvas>
-            <div id="word-display" class="word-display"></div>
+            <div class="scoreboard">
+                <div id="player1-score-game" class="player-score">
+                    <div class="player-name">Igrač 1</div>
+                    <div class="score">0</div>
+                </div>
+                <div id="player2-score-game" class="player-score">
+                    <div class="player-name">Igrač 2</div>
+                    <div class="score">0</div>
+                </div>
+            </div>
+            <div class="round-info">Runda: <span id="current-round-game">1</span></div>
+            
+            <div id="player-info" class="fade-in"></div>
+            <div class="hangman-container">
+                <canvas id="canvas" width="300" height="300"></canvas>
+            </div>
+            <div id="word-display" class="word-display fade-in"></div>
             <div id="guessed-letters" class="guessed-letters"></div>
             
             <!-- Kontrole za drugog igrača -->
             <div id="guessing-controls">
-                <input type="text" id="guess-input" placeholder="Unesite slovo ili reč" maxlength="20">
+                <input type="text" id="guess-input" placeholder="Unesite slovo ili reč" maxlength="20" autocomplete="off">
                 <button id="guess-btn" class="btn">Pogađaj</button>
             </div>
             
             <div id="message" class="message"></div>
             
             <!-- Dugme za ponovno pokretanje -->
-            <button id="restart-btn" class="btn" style="display: none;">Igraj ponovo</button>
+            <button id="restart-btn" class="btn btn-success" style="display: none;">Nova runda</button>
         </div>
     </div>
+    
+    <!-- Konfeti za pobednika -->
+    <div id="confetti-container" class="confetti-container"></div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -157,6 +429,7 @@
         const waitingForWordSection = document.getElementById('waiting-for-word-section');
         const gameSection = document.getElementById('game-section');
         
+        const playerNameInput = document.getElementById('player-name-input');
         const createGameBtn = document.getElementById('create-game-btn');
         const joinGameBtn = document.getElementById('join-game-btn');
         const gameIdInput = document.getElementById('game-id-input');
@@ -175,9 +448,24 @@
         const message = document.getElementById('message');
         const restartBtn = document.getElementById('restart-btn');
         
+        const confettiContainer = document.getElementById('confetti-container');
+        
+        // Skorboard elementi
+        const player1ScoreGame = document.getElementById('player1-score-game');
+        const player2ScoreGame = document.getElementById('player2-score-game');
+        const player1ScoreWaiting = document.getElementById('player1-score-waiting');
+        const player2ScoreWaiting = document.getElementById('player2-score-waiting');
+        const player1Score = document.getElementById('player1-score');
+        const player2Score = document.getElementById('player2-score');
+        const currentRoundGame = document.getElementById('current-round-game');
+        const currentRoundWaiting = document.getElementById('current-round-waiting');
+        const currentRound = document.getElementById('current-round');
+        
         // Podaci o igri
         let gameId = null;
         let playerRole = null; // 'setter' ili 'guesser'
+        let playerIndex = null; // 0 ili 1
+        let playerName = '';
         
         // Canvas kontekst
         const ctx = canvas.getContext('2d');
@@ -186,16 +474,41 @@
         function showSection(section) {
             const sections = document.getElementsByClassName('game-section');
             for (const s of sections) {
-                s.style.display = 'none';
+                s.classList.remove('active');
             }
-            section.style.display = 'block';
+            section.classList.add('active');
         }
+        
+        // Funkcija za prikaz poruke
+        function showMessage(text, type = 'normal') {
+            message.textContent = text;
+            message.className = 'message';
+            if (type === 'error') {
+                message.classList.add('error-message');
+            } else if (type === 'success') {
+                message.classList.add('success-message');
+            }
+        }
+        
+        // Funkcija za kopiranje ID igre
+        gameIdDisplay.addEventListener('click', () => {
+            navigator.clipboard.writeText(gameIdDisplay.textContent)
+                .then(() => {
+                    showMessage('ID igre kopiran u clipboard!', 'success');
+                    setTimeout(() => showMessage(''), 2000);
+                })
+                .catch(err => {
+                    console.error('Greška pri kopiranju:', err);
+                });
+        });
         
         // Funkcija za crtanje vešala
         function drawHangman(incorrectGuesses) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#495057';
             
             // Vešala - postolje
             ctx.beginPath();
@@ -222,53 +535,156 @@
             ctx.stroke();
             
             // Delovi tela prema broju grešaka
-            switch(incorrectGuesses) {
-                case 6: // Leva noga
-                    ctx.beginPath();
-                    ctx.moveTo(200, 180);
-                    ctx.lineTo(170, 230);
-                    ctx.stroke();
-                case 5: // Desna noga
-                    ctx.beginPath();
-                    ctx.moveTo(200, 180);
-                    ctx.lineTo(230, 230);
-                    ctx.stroke();
-                case 4: // Leva ruka
-                    ctx.beginPath();
-                    ctx.moveTo(200, 120);
-                    ctx.lineTo(170, 150);
-                    ctx.stroke();
-                case 3: // Desna ruka
-                    ctx.beginPath();
-                    ctx.moveTo(200, 120);
-                    ctx.lineTo(230, 150);
-                    ctx.stroke();
-                case 2: // Telo
-                    ctx.beginPath();
-                    ctx.moveTo(200, 100);
-                    ctx.lineTo(200, 180);
-                    ctx.stroke();
-                case 1: // Glava
-                    ctx.beginPath();
-                    ctx.arc(200, 90, 20, 0, Math.PI * 2);
-                    ctx.stroke();
-                    break;
+            if (incorrectGuesses >= 1) {
+                // Glava
+                ctx.beginPath();
+                ctx.arc(200, 100, 20, 0, Math.PI * 2);
+                ctx.stroke();
             }
+            
+            if (incorrectGuesses >= 2) {
+                // Telo
+                ctx.beginPath();
+                ctx.moveTo(200, 120);
+                ctx.lineTo(200, 190);
+                ctx.stroke();
+            }
+            
+            if (incorrectGuesses >= 3) {
+                // Leva ruka
+                ctx.beginPath();
+                ctx.moveTo(200, 140);
+                ctx.lineTo(160, 160);
+                ctx.stroke();
+            }
+            
+            if (incorrectGuesses >= 4) {
+                // Desna ruka
+                ctx.beginPath();
+                ctx.moveTo(200, 140);
+                ctx.lineTo(240, 160);
+                ctx.stroke();
+            }
+            
+            if (incorrectGuesses >= 5) {
+                // Leva noga
+                ctx.beginPath();
+                ctx.moveTo(200, 190);
+                ctx.lineTo(170, 240);
+                ctx.stroke();
+            }
+            
+            if (incorrectGuesses >= 6) {
+                // Desna noga
+                ctx.beginPath();
+                ctx.moveTo(200, 190);
+                ctx.lineTo(230, 240);
+                ctx.stroke();
+                
+                // Tužno lice za izgubljenu igru
+                ctx.beginPath();
+                ctx.arc(190, 95, 3, 0, Math.PI * 2); // Levo oko
+                ctx.arc(210, 95, 3, 0, Math.PI * 2); // Desno oko
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.arc(200, 110, 10, 0, Math.PI, true); // Tužna usta
+                ctx.stroke();
+            }
+        }
+        
+        // Funkcija za kreiranje konfeta
+        function createConfetti() {
+            confettiContainer.innerHTML = '';
+            const colors = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#577590'];
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 15 + 5 + 'px';
+                confetti.style.height = Math.random() * 15 + 5 + 'px';
+                confetti.style.opacity = Math.random() * 0.5 + 0.5;
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                
+                confettiContainer.appendChild(confetti);
+                
+                // Uklanjanje konfeta nakon animacije
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // Funkcija za ažuriranje skorborda
+        function updateScoreboard(players, currentRoundNum) {
+            if (!players || players.length < 2) return;
+            
+            // Ažuriranje svih skorboardova
+            [
+                [player1Score, player2Score],
+                [player1ScoreGame, player2ScoreGame],
+                [player1ScoreWaiting, player2ScoreWaiting]
+            ].forEach(([p1, p2]) => {
+                p1.querySelector('.player-name').textContent = players[0].name;
+                p1.querySelector('.score').textContent = players[0].score;
+                p2.querySelector('.player-name').textContent = players[1].name;
+                p2.querySelector('.score').textContent = players[1].score;
+            });
+            
+            // Ažuriranje broja runde
+            [currentRound, currentRoundGame, currentRoundWaiting].forEach(el => {
+                el.textContent = currentRoundNum;
+            });
+        }
+        
+        // Funkcija za označavanje aktivnog igrača
+        function setActivePlayer(playerIdx) {
+            // Resetujemo sve
+            [player1Score, player2Score, player1ScoreGame, player2ScoreGame, player1ScoreWaiting, player2ScoreWaiting]
+                .forEach(el => el.classList.remove('active-player'));
+            
+            // Postavljamo aktivnog igrača
+            [
+                [player1Score, player2Score],
+                [player1ScoreGame, player2ScoreGame],
+                [player1ScoreWaiting, player2ScoreWaiting]
+            ].forEach(([p1, p2]) => {
+                if (playerIdx === 0) {
+                    p1.classList.add('active-player');
+                } else {
+                    p2.classList.add('active-player');
+                }
+            });
         }
         
         // Event listeneri
         createGameBtn.addEventListener('click', () => {
-            socket.emit('createGame');
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                showMessage('Molimo unesite vaše ime!', 'error');
+                return;
+            }
+            
+            socket.emit('createGame', { playerName });
         });
         
         joinGameBtn.addEventListener('click', () => {
+            playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                showMessage('Molimo unesite vaše ime!', 'error');
+                return;
+            }
+            
             const id = gameIdInput.value.trim();
             if (id) {
                 gameId = id;
-                socket.emit('joinGame', { gameId });
+                socket.emit('joinGame', { gameId, playerName });
                 playerRole = 'guesser';
+                playerIndex = 1;
             } else {
-                message.textContent = 'Molimo unesite ID igre!';
+                showMessage('Molimo unesite ID igre!', 'error');
             }
         });
         
@@ -278,26 +694,41 @@
                 socket.emit('setWord', { gameId, word });
                 wordInput.value = '';
             } else {
-                message.textContent = 'Reč mora da sadrži samo slova!';
+                showMessage('Reč mora da sadrži samo slova!', 'error');
             }
         });
         
         guessBtn.addEventListener('click', () => {
+            makeGuess();
+        });
+        
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+        
+        function makeGuess() {
             const guess = guessInput.value.trim();
             if (guess) {
                 socket.emit('makeGuess', { gameId, guess });
                 guessInput.value = '';
             } else {
-                message.textContent = 'Unesite slovo ili reč!';
+                showMessage('Unesite slovo ili reč!', 'error');
             }
-        });
+        }
         
         restartBtn.addEventListener('click', () => {
             socket.emit('restartGame', { gameId });
             restartBtn.style.display = 'none';
-            message.textContent = '';
+            showMessage('');
             guessedLetters.textContent = '';
-            drawHangman(0);
+            
+            // Uklanjanje konfeta
+            confettiContainer.innerHTML = '';
+            
+            // Uklanjanje animacija
+            document.body.classList.remove('win-animation', 'lose-animation');
         });
         
         // Socket eventi
@@ -305,43 +736,105 @@
             gameId = data.gameId;
             gameIdDisplay.textContent = gameId;
             playerRole = 'setter';
+            playerIndex = 0;
             showSection(waitingSection);
         });
         
-        socket.on('playerJoined', () => {
-            if (playerRole === 'setter') {
+        socket.on('playerJoined', (data) => {
+            updateScoreboard(data.players, data.currentRound);
+            
+            if (playerIndex === 0) {
+                // Prvi igrač zadaje reč
                 showSection(wordSelectionSection);
+                setActivePlayer(0);
+            }
+        });
+        
+        socket.on('rejoinGame', (data) => {
+            // Ponovni ulazak u igru
+            gameId = gameIdInput.value.trim();
+            playerIndex = data.playerIndex;
+            
+            const game = data.game;
+            updateScoreboard(game.players, game.currentRound);
+            
+            if (game.status === 'waiting') {
+                showSection(waitingSection);
+            } else if (game.status === 'settingWord') {
+                if (game.currentTurn === playerIndex) {
+                    showSection(wordSelectionSection);
+                    setActivePlayer(playerIndex);
+                } else {
+                    showSection(waitingForWordSection);
+                    setActivePlayer((playerIndex + 1) % 2);
+                }
+            } else if (game.status === 'playing' || game.status === 'finished') {
+                showSection(gameSection);
+                
+                wordDisplay.textContent = game.maskedWord;
+                drawHangman(game.incorrectGuesses);
+                
+                if (game.guessedLetters && game.guessedLetters.length > 0) {
+                    guessedLetters.textContent = 'Pogođena slova: ' + game.guessedLetters.map(l => l.toUpperCase()).join(', ');
+                }
+                
+                const isGuesser = game.currentTurn === playerIndex;
+                playerInfo.textContent = isGuesser ? 
+                    'Vi pogađate reč' : 
+                    'Vi ste zadali reč';
+                
+                document.getElementById('guessing-controls').style.display = isGuesser ? 'block' : 'none';
+                
+                if (game.status === 'finished') {
+                    restartBtn.style.display = 'inline-block';
+                }
+                
+                setActivePlayer(game.currentTurn);
             }
         });
         
         socket.on('setWord', () => {
             showSection(wordSelectionSection);
+            setActivePlayer(playerIndex);
         });
         
         socket.on('waitingForWord', () => {
             showSection(waitingForWordSection);
+            setActivePlayer((playerIndex + 1) % 2);
         });
         
         socket.on('wordSet', (data) => {
-            playerInfo.textContent = 'Vi ste prvi igrač (zadajete reč)';
-            wordDisplay.textContent = data.maskedWord;
             showSection(gameSection);
+            playerInfo.textContent = 'Vi ste zadali reč';
+            wordDisplay.textContent = data.maskedWord;
+            guessedLetters.textContent = '';
             drawHangman(0);
             document.getElementById('guessing-controls').style.display = 'none';
+            updateScoreboard(data.players, data.currentRound);
+            setActivePlayer((playerIndex + 1) % 2);
+            showMessage('');
         });
         
         socket.on('startGuessing', (data) => {
-            playerInfo.textContent = 'Vi ste drugi igrač (pogađate reč)';
-            wordDisplay.textContent = data.maskedWord;
             showSection(gameSection);
+            playerInfo.textContent = 'Vi pogađate reč';
+            wordDisplay.textContent = data.maskedWord;
+            guessedLetters.textContent = '';
             drawHangman(0);
             document.getElementById('guessing-controls').style.display = 'block';
+            updateScoreboard(data.players, data.currentRound);
+            setActivePlayer(playerIndex);
+            showMessage('');
         });
         
         socket.on('correctGuess', (data) => {
             wordDisplay.textContent = data.maskedWord;
             guessedLetters.textContent = 'Pogođena slova: ' + data.guessedLetters.join(', ');
-            message.textContent = 'Dobro pogođeno!';
+            showMessage('Dobro pogođeno!', 'success');
+            wordDisplay.classList.add('pulse-animation');
+            setTimeout(() => {
+                wordDisplay.classList.remove('pulse-animation');
+            }, 500);
         });
         
         socket.on('incorrectGuess', (data) => {
@@ -350,22 +843,33 @@
                 guessedLetters.textContent = 'Pogođena slova: ' + data.guessedLetters.join(', ');
             }
             drawHangman(data.incorrectGuesses);
-            message.textContent = 'Pogrešno!';
+            showMessage(data.message || 'Pogrešno!', 'error');
         });
         
         socket.on('gameOver', (data) => {
-            message.textContent = data.message + ' Reč je bila: ' + data.word;
+            showMessage(data.message + ' Reč je bila: ' + data.word, data.winner === playerIndex ? 'success' : 'error');
+            wordDisplay.textContent = data.word;
             restartBtn.style.display = 'inline-block';
             document.getElementById('guessing-controls').style.display = 'none';
+            
+            updateScoreboard(data.players, data.currentRound);
+            setActivePlayer(data.winner);
+            
+            // Animacije za pobedu/gubitak
+            if (data.winner === playerIndex) {
+                document.body.classList.add('win-animation');
+                createConfetti();
+            } else {
+                document.body.classList.add('lose-animation');
+            }
         });
         
-        socket.on('playerDisconnected', (data) => {
-            message.textContent = data.message;
-            showSection(welcomeSection);
+        socket.on('opponentDisconnected', (data) => {
+            showMessage(`Igrač ${data.playerName} je trenutno offline. Možete nastaviti kada se vrati.`, 'error');
         });
         
         socket.on('error', (data) => {
-            message.textContent = data.message;
+            showMessage(data.message, 'error');
         });
         
         // Inicijalno prikažemo početni ekran
